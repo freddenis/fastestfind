@@ -1,0 +1,5 @@
+	[1;36mINFO -- 2020-02-25-09:02:33 -- Job dependencies definition file: cre.job (can be changed with -j option).[m
+	[1;36mINFO -- 2020-02-25-09:02:33 -- Parallel degree for execution: Max (can be changed with -p option).[m
+	[1;36mINFO -- 2020-02-25-09:02:33 -- Retention days for tmp and log purge: 31 (can be changed with -r option).[m
+	[1;36mINFO -- 2020-02-25-09:02:33 -- Makefile ./tmp/makefile.tmp2534030 successfully generated.[m
+	[1;36mINFO -- 2020-02-25-09:02:36 -- Logfile ./logs/job_def.swid_2020-02-25-09:02:33 will be used.[m
