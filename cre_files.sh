@@ -16,11 +16,13 @@ TMPDIR="/tmp"
 # Cleanup
 #
 cleanup() {
-        err=$?
-        end=$(date +%s)
-    seconds=$(( end - start ))
-    printf "\n"
-    printf "\t\033[1;32m%s\033[m\n" $nb" files have been successfully created in "$seconds" seconds."
+    err=$?
+    if [[ $err -eq 0 ]]; then
+            end=$(date +%s)
+        seconds=$(( end - start ))
+        printf "\n"
+        printf "\t\033[1;32m%s\033[m\n" $nb" files have been successfully created in "$seconds" seconds."
+    fi
     exit ${err}
 }
 sig_cleanup() {
