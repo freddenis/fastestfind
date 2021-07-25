@@ -9,19 +9,50 @@ set -o pipefail
 nbtests=5
 nbfiles=100000
 #
+# Find command and options to test
+#
 FIND="find ${dir} -type f "
 OPT1="-delete"
 OPT2="-exec rm -f {} \;"
-OPT3="| xargs -0 -n 10 rm -f"
 OPT3="| xargs rm -f"
 #
-#for WHAT in OPT1 OPT2 OPT3; do
-for WHAT in OPT3; do
+# Usage
+#
+usage() {
+cat << END
+        -n | --nbfiles  )  Number of files to create (default is ${nbfiles})
+        -t | --nbtests  )  Number of test of each find option (default is ${nbtests})
+        -h | --help     )  Shows this help
+END
+        exit 123
+}
+#
+# Options
+#
+SHORT="t:,n:,h"
+ LONG="nbtests:,nbfiles:,help"
+options=$(getopt -a --longoptions "${LONG}" --options "${SHORT}" -n "$0" -- "$@")
+if [[ $? -ne 0 ]]; then
+    printf "\033[1;31m%s\033[m\n" "$($TS) [ERROR] Invalid options provided: $*; use -h for help; cannot continue." >&2
+    exit 864
+fi
+eval set -- "${options}"
+while true; do
+    case "$1" in
+        -n | --nbfiles  )   nbfiles="$2"    ; shift 2 ;;
+        -t | --nbtests  )   nbtests="$2"    ; shift 2 ;;
+        -h | --help     )   usage           ; shift   ;;
+             --         )   shift           ; break   ;;
+    esac
+done
+#
+printf "\033[1;36m%s\033[m\n" "********************************************************************************************"
+printf "\033[1;36m%s\033[m\n" "Fastestfind test with ${nbfiles} files and file deletion with find option: ${!WHAT}"
+printf "\033[1;36m%s\033[m\n" "********************************************************************************************"
+for WHAT in OPT1 OPT2 OPT3; do
+#for WHAT in OPT3; do
 #    echo ${!WHAT}
-    echo ${FIND}${!WHAT}
-    printf "\033[1;36m%s\033[m\n" "********************************************************************************************"
-    printf "\033[1;36m%s\033[m\n" "Fastestfind test with ${nbfiles} files and file deletion with find option: ${!WHAT}"
-    printf "\033[1;36m%s\033[m\n" "********************************************************************************************"
+#    echo ${FIND}${!WHAT}
     for i in $(seq 1 ${nbtests}); do
         #
         # Create the files
@@ -42,7 +73,6 @@ for WHAT in OPT3; do
         #
         if [[ -d "${dir}"  || -n "${ECHO}" ]]; then
             start=$(date +%s)
-            echo ${FIND}${!WHAT}
             eval ${FIND}${!WHAT}  #> /dev/null
             end=$(date +%s)
             seconds=$(( end - start ))

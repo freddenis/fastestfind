@@ -26,8 +26,8 @@ cleanup() {
     exit ${err}
 }
 sig_cleanup() {
-    printf "\033[1;31m%s\033[m\n" "$($TS) [ERROR] I have been killed !" >&2
-    printf "\033[1;31m%s\033[m\n" "$($TS) [INFO] Cleaning tempfiles" >&2
+    printf "\n\033[1;31m%s\033[m\n" "$($TS) [ERROR] I have been killed !" >&2
+    printf "\033[1;31m%s\033[m\n" "$($TS) [INFO] Cleaning tempfiles, please give it a minute." >&2
     rm -fr "${dir}"
     exit 666
 }
@@ -38,10 +38,10 @@ trap sig_cleanup INT TERM QUIT
 #
 usage() {
 cat << END
-	-d:	Directory where to create the files
-	-n:	Number of files to create
-	-f:	Force drop the directory if already exists
-	-h:	Help
+        -d | --dir      )  Temporary directory to create the files on
+                           (do not set it up and let the default do the job is recommended)
+        -n | --nbfiles  )  Number of files to create (default is ${nb})
+        -h | --help     )  Shows this help 
 END
 	exit 123
 }
@@ -49,7 +49,7 @@ END
 # Options
 #
 SHORT="d:,n:,h"
- LONG="dir:,nb:,help"
+ LONG="dir:,nbfiles:,help"
 options=$(getopt -a --longoptions "${LONG}" --options "${SHORT}" -n "$0" -- "$@")
 if [[ $? -ne 0 ]]; then
     printf "\033[1;31m%s\033[m\n" "$($TS) [ERROR] Invalid options provided: $*; use -h for help; cannot continue." >&2
@@ -58,12 +58,15 @@ fi
 eval set -- "${options}"
 while true; do
     case "$1" in
-        -d | --dir   )   dir="$2"        ; shift 2 ;;
-        -n | --nb    )    nb="$2"        ; shift 2 ;;
-        -h | --help  )   usage           ; shift   ;;
-             --      )   shift           ; break   ;;
+        -d | --dir      )   dir="$2"        ; shift 2 ;;
+        -n | --nbfiles  )    nb="$2"        ; shift 2 ;;
+        -h | --help     )   usage           ; shift   ;;
+             --         )   shift           ; break   ;;
     esac
 done
+unit=${nb: -1}
+if [[ "${unit}" =~ [kK] ]]; then nb=$(( ${nb::-1}*1000 )); fi
+if [[ "${unit}" =~ [mM] ]]; then nb=$(( ${nb::-1}*1000000 )); fi
 
 incr=$(( nb / part ))
 
@@ -86,7 +89,7 @@ printf "\t\033[1;37m%s\033[m\n" "--------------------------"
 
 cd ${dir}
 for i in $(seq 1 $part); do
-    (dd if=/dev/random bs=$size count=$incr | split -b $size --additional-suffix=$i) > /dev/null 2>&1
+    (dd if=/dev/random bs=${size} count=${incr} | split -b ${size} --additional-suffix=$i) > /dev/null 2>&1
     pct=$(( i * part ))
 #   echo $pct
     printf "\t\033[1;34m%s\033[m" $pct"%"
