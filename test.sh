@@ -8,6 +8,7 @@ set -o pipefail
     dir=$(mktemp -du -p ${TMPDIR})
 nbtests=5
 nbfiles=100000
+declare -A sumup
 #
 # Find command and options to test
 #
@@ -65,6 +66,7 @@ printf "\033[1;36m%s\033[m\n" "*************************************************
 printf "\033[1;36m%s\033[m\n" "Fastestfind test with ${nbfiles} files and file deletion with find option: ${!WHAT}"
 printf "\033[1;36m%s\033[m\n" "********************************************************************************************"
 for WHAT in OPT1 OPT2 OPT3; do
+    totalsec=0
     for i in $(seq 1 ${nbtests}); do
         #
         # Create the files
@@ -95,5 +97,25 @@ for WHAT in OPT1 OPT2 OPT3; do
             exit 124
         fi
         rm -fr "${dir}"
+        #
+        # For sumup
+        # 
+        (( totalsec+=seconds ))
+        if (( i == nbtests )); then
+#            echo "Average ${WHAT}" $(( totalsec/nbtests ))
+            sumup["${WHAT}"]=$(( totalsec/nbtests ))
+        fi
     done
 done
+
+printf "\n"
+printf " %-15s|" "find option"
+for X in ${!sumup[@]}; do
+    printf " %-20s|" "${!X}"
+done
+printf "\n"
+printf " %-15s|" "Time (seconds)"
+for X in ${!sumup[@]}; do
+    printf " %-20s|" "${sumup[$X]}"
+done
+printf "\n"
