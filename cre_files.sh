@@ -8,7 +8,7 @@ set -o pipefail
     TS="date "+%Y-%m-%d_%H%M%S""          # A timestamp for a nice outut in a logfile
 TMPDIR="/tmp"
    dir=$(mktemp -du fastestfindXXXXXXXXX -p ${TMPDIR})
-  size=1024
+  size=512
     nb=100000
   part=10
  start=$(date +%s)
@@ -68,8 +68,6 @@ unit=${nb: -1}
 if [[ "${unit}" =~ [kK] ]]; then nb=$(( ${nb::-1}*1000 )); fi
 if [[ "${unit}" =~ [mM] ]]; then nb=$(( ${nb::-1}*1000000 )); fi
 
-incr=$(( nb / part ))
-
 if [[ ! -d ${dir} ]]; then
     mkdir -p ${dir}
     if [ $? -eq 0 ]; then
@@ -87,6 +85,7 @@ start=$(date +%s)
 printf "\t\033[1;37m%s\033[m\n" "Let's create "$nb" files :"
 printf "\t\033[1;37m%s\033[m\n" "--------------------------"
 
+incr=$(( nb / part ))
 cd ${dir}
 for i in $(seq 1 $part); do
     (dd if=/dev/random bs=${size} count=${incr} | split -b ${size} --additional-suffix=$i) > /dev/null 2>&1

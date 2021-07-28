@@ -16,6 +16,7 @@ FIND="find ${dir} -type f "
 OPT1="-delete"
 OPT2="-exec rm -f {} \;"
 OPT3="| xargs rm -f"
+OPT4="| parallel -P0 'rm -f {};'"
 #
 # Cleanup
 #
@@ -65,7 +66,7 @@ done
 printf "\033[1;36m%s\033[m\n" "********************************************************************************************"
 printf "\033[1;36m%s\033[m\n" "Fastestfind test with ${nbfiles} files and file deletion with find option: ${!WHAT}"
 printf "\033[1;36m%s\033[m\n" "********************************************************************************************"
-for WHAT in OPT1 OPT2 OPT3; do
+for WHAT in OPT1 OPT2 OPT3 OPT4; do
     totalsec=0
     for i in $(seq 1 ${nbtests}); do
         #
