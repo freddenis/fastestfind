@@ -19,8 +19,9 @@ FIND="find ${dir} -type f "
 OPT1="| xargs rm -f"
 OPT2="-exec rm -f {} \;"
 OPT3="-delete"
-OPT4="| parallel rm -f {};"
+OPT4="| parallel -X -j0 rm -f {};"
 list_options=('OPT1' 'OPT2' 'OPT3' 'OPT4')  # List of options to test
+#list_options=('OPT4')  # List of options to test
 #
 # Cleanup
 #
