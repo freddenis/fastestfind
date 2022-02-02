@@ -38,10 +38,11 @@ trap sig_cleanup INT TERM QUIT
 #
 usage() {
 cat << END
-        -d | --dir      )  Temporary directory to create the files on
-                           (do not set it up and let the default do the job is recommended)
-        -n | --nbfiles  )  Number of files to create (default is ${nb})
-        -h | --help     )  Shows this help 
+    -d | --dir      )  Temporary directory to create the files on
+                       (do not set it up and let the default do the job is recommended)
+    -n | --nbfiles  )  Number of files to create (default is ${nb})
+                       You can use k for thousands (10k=10000) and m for millions (2m=2 millions)
+    -h | --help     )  Shows this help 
 END
 	exit 123
 }
